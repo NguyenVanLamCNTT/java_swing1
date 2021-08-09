@@ -1,4 +1,4 @@
-package bai_1;
+package bai_2;
 
 public class Main {
 
@@ -6,4 +6,5 @@ public class Main {
 		// TODO Auto-generated method stub
 		MyFrame myFrame = new MyFrame();
 	}
+
 }
