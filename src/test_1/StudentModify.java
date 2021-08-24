@@ -32,7 +32,7 @@ public class StudentModify {
 		}
 		return dsHS;
 	}
-	public boolean insert(String fullName, String gender, int age, String email,String phone) {
+	public static boolean insert(String fullName, String gender, int age, String email,String phone) {
 		try {
 			Connection con = ConnectDB.getConnection();
 			String sql = "insert into student values(?,?,?,?,?)";
@@ -49,7 +49,7 @@ public class StudentModify {
 			return false;
 		}
 	}
-	public boolean delete(String fullName) {
+	public static boolean delete(String fullName) {
 		try {
 			Connection con = ConnectDB.getConnection();
 			String sql = "delete from student where fullname=?";

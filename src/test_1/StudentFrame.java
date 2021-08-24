@@ -1,14 +1,22 @@
 package test_1;
 
+import java.awt.List;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import test_1.StudentModify;
 
 public class StudentFrame extends JFrame{
-	TableModel	tableModel;
+	java.util.List<Student> studentList = new ArrayList<>();
+	DefaultTableModel	tableModel;
+	String col[] = {"Full Name", "Gender", "Age", "Email", "Phone"};
 	private javax.swing.JButton btnDelete;
     private javax.swing.JButton btnFind;
     private javax.swing.JButton btnReset;
@@ -26,13 +34,15 @@ public class StudentFrame extends JFrame{
     private javax.swing.JTextField textName;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtPhone;
-//    private void showStudent() {
-//    	ArrayList<Student> students = StudentModify.findAll();
-//    	students.forEach((student) -> {
-//    		((DefaultTableModel) tableModel).addRow(new Object[] {student.getFullName(), student.getGender(), student.getAge(), student.getEmail(), student.getPhone()});
-//    	});
-//    	tblStudent.setModel(tableModel);
-//    }
+    private void showStudent() {
+    	
+    	studentList = StudentModify.findAll();
+    	tableModel.setRowCount(0);
+    	for(Student student : studentList) {
+    		tableModel.addRow(new Object[] {student.getFullName(), student.getGender(), student.getAge(), student.getEmail(), student.getPhone()});
+    	}
+    	tblStudent.setModel(tableModel);
+    }
 	public StudentFrame() {
 		try {
 			ConnectDB.getInstance().connect();
@@ -40,8 +50,7 @@ public class StudentFrame extends JFrame{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-//		tableModel = (DefaultTableModel) tblStudent.getModel();
-//		showStudent();
+
 		// TODO Auto-generated constructor stub
 		jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
@@ -117,6 +126,11 @@ public class StudentFrame extends JFrame{
         });
 
         btnDelete.setText("Delete");
+        btnDelete.addActionListener(new java.awt.event.ActionListener() {
+        	public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteActionPerformed(evt);
+            }
+        });
 
         btnFind.setText("Find");
         btnFind.addActionListener(new java.awt.event.ActionListener() {
@@ -186,22 +200,9 @@ public class StudentFrame extends JFrame{
                 .addContainerGap())
         );
 
-        tblStudent.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-                "Full Name", "Gender", "Age", "Email", "Phone"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
-
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
+        tableModel = new DefaultTableModel(col,0);
+        
+        tblStudent = new JTable(tableModel);
         jScrollPane1.setViewportView(tblStudent);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -224,8 +225,8 @@ public class StudentFrame extends JFrame{
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 154, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(33, Short.MAX_VALUE))
         );
-
-        pack();
+		showStudent();
+        pack();///sau nhơ khai báo trước r hãy sử dụng hàm :v
     }// </editor-fold>                        
 
     private void textNameActionPerformed(java.awt.event.ActionEvent evt) {                                         
@@ -244,17 +245,43 @@ public class StudentFrame extends JFrame{
         // TODO add your handling code here:
     }                                        
 
-    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {                                        
+    private void btnSaveActionPerformed(java.awt.event.ActionEvent evt) {          
         // TODO add your handling code here:
+    	String fullname = textName.getText();
+    	String gender = cbGender.getSelectedItem().toString();
+    	int age = Integer.parseInt(textAge.getText());
+    	String email = txtEmail.getText();
+    	String phone = txtPhone.getText();
+    	StudentModify.insert(fullname,gender,age,email,phone);
+    	showStudent();
     }                                       
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {                                         
         // TODO add your handling code here:
+    	textName.setText("");
+    	textAge.setText("");
+    	cbGender.setSelectedIndex(0);
+    	txtEmail.setText("");
+    	txtPhone.setText("");	
     }                                        
 
     private void btnFindActionPerformed(java.awt.event.ActionEvent evt) {                                        
         // TODO add your handling code here:
-    }                                       
+    }    
+    private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        // TODO add your handling code here:
+    	int selectedIndex = tblStudent.getSelectedRow();
+    	System.out.print(selectedIndex);
+    	if(selectedIndex >= 0) {
+    		System.out.print("1");
+    		Student sv = studentList.get(selectedIndex);
+    		int option = JOptionPane.showConfirmDialog(this, "Ban Chac Muons Xoa Sinh vien nay?");
+    		if(option == 0) {
+    			StudentModify.delete(sv.getFullName());
+    			showStudent();
+    		}
+    	}
+    } 
 
     /**
      * @param args the command line arguments
